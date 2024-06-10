@@ -17,7 +17,7 @@ GROUP BY
 HAVING 
     SUM(p.amount) > 40;
 
---22 Mostrar la cantidad del clientes hay por ciudad 
+--22 Mostrar la cantidad del clientes hay por ciudad (revisar)
 
 SELECT 
     city.city_id,
@@ -73,13 +73,6 @@ HAVING
 
 --25 Mostrar los actores que no están en ninguna película
 
-SELECT 
-    a.actor_id, 
-    a.first_name, 
-    a.last_name
-FROM 
-    public.actor a
-LEFT JOIN 
-    public.film_actor fa ON a.actor_id = fa.actor_id
-WHERE 
-    fa.actor_id IS NULL;
+SELECT a.actor_id, a.first_name, a.last_name
+FROM actor a
+WHERE a.actor_id NOT IN (SELECT fa.actor_id FROM film_actor fa);
