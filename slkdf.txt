@@ -1,0 +1,23 @@
+CREATE TABLE public.film (
+    film_id smallint NOT NULL,
+    title character varying(128) NOT NULL,
+    description text,
+    release_year smallint,
+    language_id smallint NOT NULL,
+    original_language_id smallint,
+    rental_duration smallint DEFAULT 3 NOT NULL,
+    rental_rate numeric(4,2) DEFAULT 4.99 NOT NULL,
+    length integer,
+    replacement_cost numeric(5,2) DEFAULT 19.99 NOT NULL,
+    rating character varying(5) DEFAULT 'G'::character varying,
+    special_features character varying(54),
+    last_update timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    trial720 character(1)
+);
+
+CREATE TABLE public.language (
+    language_id smallint NOT NULL,
+    name character(20) NOT NULL,
+    last_update timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    trial720 character(1)
+);
