@@ -1,4 +1,4 @@
--- Mostrar 10 películas mas alquiladas (table rental -> inventory -> film)
+-- 11 Mostrar 10 películas mas alquiladas (table rental -> inventory -> film)
 SELECT f.title, COUNT(*) AS "Veces Alquilada"
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
@@ -7,7 +7,7 @@ GROUP BY f.title
 ORDER BY COUNT(*) DESC
 LIMIT 10;
 
--- Listar las películas alquiladas por el cliente "OWENS, CARMEN"
+-- 12 Listar las películas alquiladas por el cliente "OWENS, CARMEN"
 SELECT f.title
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
@@ -15,12 +15,12 @@ JOIN film f ON i.film_id = f.film_id
 JOIN customer c ON r.customer_id = c.customer_id
 WHERE c.last_name = 'OWENS' AND c.first_name = 'CARMEN';
 
--- Buscar los pagos que no han sido asignados a ningún alquiler (table payment -> rental)
+-- 13 Buscar los pagos que no han sido asignados a ningún alquiler (table payment -> rental)
 SELECT *
 FROM payment
 WHERE rental_id IS NULL;
 
--- Seleccionar todas las películas que son en "Mandarin" y listar las por orden alfabético, mostrando el titulo de la película y el idioma 
+-- 14 Seleccionar todas las películas que son en "Mandarin" y listar las por orden alfabético, mostrando el titulo de la película y el idioma 
 -- ingresando el idioma en minúsculas. (table film -> language)
 SELECT f.title AS "Título de la Película", l.name AS "Idioma"
 FROM film f
