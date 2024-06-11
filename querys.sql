@@ -1,4 +1,4 @@
---21 Listar el monto gastado por los customer que hayan gastado mas de 40 en el mes 6 de 2005
+--21. Listar el monto gastado por los customer que hayan gastado mas de 40 en el mes 6 de 2005
 
 SELECT 
     c.customer_id,
@@ -17,7 +17,7 @@ GROUP BY
 HAVING 
     SUM(p.amount) > 40;
 
---22 Mostrar la cantidad del clientes hay por ciudad (revisar)
+--22. Mostrar la cantidad del clientes hay por ciudad (revisar)
 
 SELECT 
     city.city_id,
@@ -34,7 +34,7 @@ GROUP BY
 ORDER BY 
     city.city_id;
 
---23 Mostrar las 5 películas con mayor cantidad de actores
+--23. Mostrar las 5 películas con mayor cantidad de actores
 
 SELECT 
     f.film_id,
@@ -51,7 +51,7 @@ ORDER BY
 LIMIT 
     5;
 
---24 Mostrar los días donde se hayan alquilado mas de 10 de películas de "Drama"
+--24. Mostrar los días donde se hayan alquilado mas de 10 de películas de "Drama"
 
 SELECT 
     DATE(r.rental_date) AS rental_day,
@@ -71,7 +71,7 @@ GROUP BY
 HAVING 
     COUNT(r.rental_id) > 10;
 
---25 Mostrar los actores que no están en ninguna película
+--25. Mostrar los actores que no están en ninguna película
 
 SELECT a.actor_id, a.first_name, a.last_name
 FROM actor a
