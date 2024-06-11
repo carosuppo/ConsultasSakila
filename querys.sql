@@ -7,7 +7,29 @@ JOIN film ON inventory.film_id = film.film_id
 JOIN language ON film.language_id = language.language_id
 WHERE customer.first_name = 'BARBARA' AND customer.last_name = 'JONES';
 
--- Query 2
+-- Query 2 con repeticion
+SELECT actor.last_name, actor.first_name
+FROM actor
+JOIN film_actor ON actor.actor_id = film_actor.actor_id
+JOIN film ON film_actor.film_id = film.film_id
+JOIN film_category ON film.film_id = film_category.film_id
+WHERE film_category.category_id = (
+    SELECT category_id
+    FROM category
+    WHERE category.name = 'Comedy'
+)
+
+-- Query 2 sin repeticion
+SELECT DISTINCT actor.last_name, actor.first_name
+FROM actor
+JOIN film_actor ON actor.actor_id = film_actor.actor_id
+JOIN film ON film_actor.film_id = film.film_id
+JOIN film_category ON film.film_id = film_category.film_id
+WHERE film_category.category_id = (
+    SELECT category_id
+    FROM category
+    WHERE category.name = 'Comedy'
+)
 
 -- Query 3
 SELECT film.*
