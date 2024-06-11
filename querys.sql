@@ -1,3 +1,89 @@
+-- Query 1
+SELECT film.title, language.name, rental_date, return_date
+FROM customer
+JOIN rental ON customer.customer_id = rental.customer_id
+JOIN inventory ON rental.inventory_id = inventory.inventory_id
+JOIN film ON inventory.film_id = film.film_id
+JOIN language ON film.language_id = language.language_id
+WHERE customer.first_name = 'BARBARA' AND customer.last_name = 'JONES';
+
+-- Query 2
+
+-- Query 3
+SELECT film.*
+FROM actor
+JOIN film_actor ON actor.actor_id = film_actor.actor_id
+JOIN film ON film_actor.film_id = film.film_id
+WHERE actor.first_name = 'RAY';
+
+-- Query 4 (da distinto, pero para mi esta bien)
+SELECT title
+FROM film
+WHERE length BETWEEN 61 AND 99
+  AND language_id = (
+    SELECT language_id
+    FROM language
+    WHERE name = 'French'
+  );
+
+-- Query 5
+SELECT UPPER(ci.city) AS nombre_ciudad, 
+       UPPER(co.country) AS nombre_pais
+FROM city ci
+JOIN country co ON ci.country_id = co.country_id
+WHERE co.country IN ('Austria', 'Chile', 'France')
+ORDER BY UPPER(co.country), UPPER(ci.city);
+
+-- Query 6
+SELECT LOWER(last_name) || ' ' || UPPER(first_name) AS nombre_completo
+FROM actor
+WHERE last_name LIKE '%SS%';
+
+-- Query 7
+SELECT i.inventory_id AS nro_ejemplar, f.title AS nombre_pelicula
+FROM rental r
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN store s ON i.store_id = s.store_id
+JOIN address a ON s.address_id = a.address_id
+JOIN city c ON a.city_id = c.city_id
+WHERE EXTRACT(DAY FROM r.rental_date) = 26
+  AND c.city = 'Woodridge'
+ORDER BY i.inventory_id;
+
+-- Query 8
+SELECT f.title AS nombre_pelicula,
+       l.name AS lenguaje_original,
+       f.replacement_cost AS valor_reposicion
+FROM film f
+JOIN language l ON f.language_id = l.language_id
+ORDER BY f.replacement_cost DESC
+LIMIT 10 OFFSET 10;
+
+-- Query 9 (no da, pero no encuentro el error)
+SELECT f.title AS nombre_pelicula,
+       c.first_name AS nombre_cliente,
+       i.inventory_id AS nro_ejemplar,
+       r.rental_date AS fecha_alquiler,
+       r.return_date AS fecha_devolucion
+FROM rental r
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN customer c ON r.customer_id = c.customer_id
+WHERE r.return_date IS NOT NULL
+  AND AGE(r.return_date, r.rental_date) > INTERVAL '7 days';
+
+-- Query 10
+SELECT f.title AS nombre_pelicula,
+       i.inventory_id AS numero_ejemplar,
+       CONCAT(c.last_name, ', ', c.first_name) AS nombre_cliente,
+       r.rental_date AS fecha_alquiler
+FROM rental r
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN customer c ON r.customer_id = c.customer_id
+WHERE r.return_date IS NULL;
+
 --21 Listar el monto gastado por los customer que hayan gastado mas de 40 en el mes 6 de 2005
 
 SELECT 
