@@ -76,14 +76,13 @@ ORDER BY "Monto" DESC;
 -- 18. Listar todos los actores de las películas alquiladas en el periodo 7 del año 2005. Ordenados alfabéticamente representados 
 -- "APELLIDO, nombre" renombrar el campo como Actor
 
-SELECT CONCAT(a.last_name, ', ', LOWER(a.first_name)) AS "Actor"
+SELECT DISTINCT CONCAT(a.last_name, ', ', LOWER(a.first_name)) AS "Actor"
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
---JOIN film f ON i.film_id = f.film_id
 JOIN film_actor fa ON i.film_id = fa.film_id
 JOIN actor a ON fa.actor_id = a.actor_id
 WHERE EXTRACT(YEAR FROM r.rental_date) = 2005 AND EXTRACT(MONTH FROM r.rental_date) = 7
-ORDER BY a.last_name ASC, a.first_name ASC;
+ORDER BY CONCAT(a.last_name, ', ', LOWER(a.first_name)) ASC;
 
 -- 19. Listar el monto gastado por el customer last_name=SHAW; first_name=CLARA; 
 

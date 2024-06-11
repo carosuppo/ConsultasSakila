@@ -184,3 +184,145 @@ HAVING
 SELECT a.actor_id, a.first_name, a.last_name
 FROM actor a
 WHERE a.actor_id NOT IN (SELECT fa.actor_id FROM film_actor fa);
+
+--26. Mostrar los clientes que hayan alquilado la película mas alquilada conjuntamente con los clientes que 
+--hayan alquilado la menos alquilada con repeticiones, ordenados alfabéticamente 
+
+WITH max_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) DESC 
+    LIMIT 1
+),
+min_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) ASC
+    LIMIT 1
+)
+SELECT c.customer_id, c.first_name, c.last_name
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN min_alquilada ma ON i.film_id = ma.film_id
+
+UNION ALL
+
+SELECT c.customer_id, c.first_name, c.last_name
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN max_alquilada ma ON i.film_id = ma.film_id
+
+ORDER BY last_name, first_name;
+
+--27. Mostrar los clientes que hayan alquilado la película mas alquilada conjuntamente con los clientes que hayan alquilado 
+--la menos alquilada sin repeticiones, ordenados alfabéticamente 
+
+WITH max_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) DESC 
+    LIMIT 1
+    ), min_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) ASC
+    LIMIT 1
+    )
+SELECT DISTINCT c.customer_id, c.first_name, c.last_name
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN max_alquilada ma ON i.film_id = ma.film_id
+
+UNION ALL
+
+SELECT DISTINCT c.customer_id, c.first_name, c.last_name
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN min_alquilada ma ON i.film_id = ma.film_id
+
+GROUP BY c.customer_id
+ORDER BY last_name, first_name;
+
+--28. Mostrar el/los clientes que hayan alquilo la película mas alquilada y la menos alquilada. 
+
+WITH max_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) DESC 
+    LIMIT 1
+    ), min_alquilada AS (
+    SELECT i.film_id
+    FROM inventory i
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    GROUP BY i.film_id
+    ORDER BY COUNT(r.rental_id) ASC
+    LIMIT 1
+    )
+SELECT c.customer_id, c.first_name, c.last_name
+FROM customer c
+WHERE c.customer_id IN (
+    SELECT r.customer_id
+    FROM rental r
+    JOIN inventory i ON i.inventory_id = r.inventory_id
+    JOIN max_alquilada ma ON i.film_id = ma.film_id
+)
+AND c.customer_id IN(
+    SELECT r.customer_id
+    FROM rental r
+    JOIN inventory i ON i.inventory_id = r.inventory_id
+    JOIN min_alquilada mia ON i.film_id = mia.film_id
+)
+ORDER BY c.first_name, c.last_name;
+
+--29. Mostrar los clientes que alquilaron películas de la categoría 'New' los días en que se hayan alquilado
+--más de 40 ejemplares de dicha categoría 
+
+SELECT DISTINCT c.customer_id, c.first_name, c.last_name
+FROM rental r
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category cat ON fc.category_id = cat.category_id
+JOIN customer c ON r.customer_id = c.customer_id
+WHERE cat.name = 'New'
+AND r.rental_date::date IN (
+    SELECT rental_date::date
+    FROM rental r
+    JOIN inventory i ON r.inventory_id = i.inventory_id
+    JOIN film f ON i.film_id = f.film_id
+    JOIN film_category fc ON f.film_id = fc.film_id
+    JOIN category cat ON fc.category_id = cat.category_id
+    WHERE cat.name = 'New'
+    GROUP BY r.rental_date::date
+    HAVING COUNT(*) > 40
+);
+
+--30. Mostrar los días que se hayan alquilado películas (cantidad) por encima de la media
+--de alquileres diaria ordenado por la cantidad de alquileres.
+WITH alquileres_por_dia AS (
+    SELECT DATE(rental_date) AS fecha_alquiler, COUNT(*) AS cantidad_alquileres
+    FROM rental
+    GROUP BY DATE(rental_date)
+),
+promedio_alquileres AS (
+    SELECT AVG(cantidad_alquileres) AS promedio_diario
+    FROM alquileres_por_dia
+)
+SELECT fecha_alquiler, cantidad_alquileres
+FROM alquileres_por_dia, promedio_alquileres
+WHERE cantidad_alquileres > promedio_diario
+ORDER BY cantidad_alquileres DESC;
